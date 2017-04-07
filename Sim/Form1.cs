@@ -14,7 +14,7 @@ namespace Sim
     {
 
         List<PictureBox> droplets = new List<PictureBox>();
-        const int nDroplets = 200;
+        const int nDroplets = 100;
         Size sizeDroplet = new Size(2,2);
         Random rand = new Random();
         const int screenWidth = 1000;
@@ -142,6 +142,18 @@ namespace Sim
             mainsupplytop.Size = new Size(150, 30);
             this.Controls.Add(mainsupplytop);
 
+            PictureBox salaryBottom = new PictureBox();
+            salaryBottom.Location = new Point(330, 230);
+            salaryBottom.BackColor = sidesColor;
+            salaryBottom.Size = new Size(150, 30);
+            this.Controls.Add(salaryBottom);
+
+            PictureBox salaryRight = new PictureBox();
+            salaryRight.Location = new Point(450, 120);
+            salaryRight.BackColor = sidesColor;
+            salaryRight.Size = new Size(30, 110);
+            this.Controls.Add(salaryRight);
+
 
             for (int i = 0; i < nDroplets; i++)
             {
@@ -224,6 +236,13 @@ namespace Sim
                     loc[i, 0] = 2 * taxRight.Location.X - loc[i, 0];
                 }
 
+                if (droplets[i].Location.X <= taxRight.Bounds.Right && droplets[i].Location.X > taxRight.Bounds.Right - errornext && droplets[i].Location.Y > taxRight.Bounds.Top && droplets[i].Location.Y < taxRight.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = loc[i, 0] + 2 * (taxRight.Bounds.Right - loc[i, 0]);
+                }
+
+
                 if (droplets[i].Location.Y >= mainBottom.Location.Y && droplets[i].Location.Y < mainBottom.Bounds.Bottom && droplets[i].Location.X > mainBottom.Bounds.Left && droplets[i].Location.X < mainBottom.Bounds.Right)
                 {
                     vel[i, 1] = -vel[i, 1]*dampner;
@@ -288,6 +307,20 @@ namespace Sim
                     vel[i, 0] = 3;
                     
                 }
+
+                if (droplets[i].Location.Y >= salaryBottom.Location.Y && droplets[i].Location.Y < salaryBottom.Bounds.Bottom && droplets[i].Location.X > salaryBottom.Bounds.Left && droplets[i].Location.X < salaryBottom.Bounds.Right)
+                {
+                    vel[i, 1] = -vel[i, 1] * dampner;
+                    loc[i, 1] = loc[i, 1] - 2 * (loc[i, 1] + sizeDroplet.Height - salaryBottom.Bounds.Top);
+
+                }
+
+                if (droplets[i].Location.X >= salaryRight.Bounds.Left && droplets[i].Location.X < salaryRight.Bounds.Left + errornext && droplets[i].Location.Y > salaryRight.Bounds.Top && droplets[i].Location.Y < salaryRight.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = 2 * salaryRight.Location.X - loc[i, 0];
+                }
+
 
 
                 // check droplet collisions

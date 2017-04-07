@@ -20,17 +20,19 @@ namespace Sim
         const int screenWidth = 1000;
         const int screenHeight = 600;
         Color dropletColor = Color.Blue;
+        BorderStyle borders = BorderStyle.FixedSingle;
         Timer simTime;
         const int simTimeInterval = 1;
         int[,] speed = new int[nDroplets, 2];
         const double gravity = 1;
         double errorMargin = 3;
         double errornext = 5;
-        Color sidesColor = Color.Black;
+        Color sidesColor = Color.Gray;
         double dampner = 0.5;
         PictureBox taxDivider = new PictureBox();
         PictureBox taxDividerBottom = new PictureBox();
         PictureBox taxBottom = new PictureBox();
+        PictureBox salaryBottom = new PictureBox();
 
         double[,] loc = new double [nDroplets, 2];
         double[,] vel = new double[nDroplets, 2];
@@ -46,6 +48,7 @@ namespace Sim
             this.Controls.Add(taxDivider);
             this.Controls.Add(taxDividerBottom);
             this.Controls.Add(taxBottom);
+            this.Controls.Add(salaryBottom);
 
             for (int i = 0; i < nDroplets; i++)
             {
@@ -127,6 +130,7 @@ namespace Sim
             PictureBox maintop = new PictureBox();
             maintop.Location = new Point(100, 20);
             maintop.BackColor = sidesColor;
+            
             maintop.Size = new Size(500, 30);
             this.Controls.Add(maintop);
 
@@ -142,18 +146,29 @@ namespace Sim
             mainsupplytop.Size = new Size(150, 30);
             this.Controls.Add(mainsupplytop);
 
-            PictureBox salaryBottom = new PictureBox();
-            salaryBottom.Location = new Point(330, 230);
+          
+            salaryBottom.Location = new Point(330 + trackBar4.Value, 230);
             salaryBottom.BackColor = sidesColor;
-            salaryBottom.Size = new Size(150, 30);
-            this.Controls.Add(salaryBottom);
+            salaryBottom.Size = new Size(trackBar3.Value - trackBar4.Value, 30);
+            
 
             PictureBox salaryRight = new PictureBox();
             salaryRight.Location = new Point(450, 120);
             salaryRight.BackColor = sidesColor;
-            salaryRight.Size = new Size(30, 110);
+            salaryRight.Size = new Size(30, 180);
             this.Controls.Add(salaryRight);
 
+            PictureBox savingsBottom = new PictureBox();
+            savingsBottom.Location = new Point(370, 300);
+            savingsBottom.BackColor = sidesColor;
+            savingsBottom.Size = new Size(110, 30);
+            this.Controls.Add(savingsBottom);
+
+            PictureBox bottomGuard = new PictureBox();
+            bottomGuard.Location = new Point(400, 350);
+            bottomGuard.BackColor = sidesColor;
+            bottomGuard.Size = new Size(30, 170);
+            this.Controls.Add(bottomGuard);
 
             for (int i = 0; i < nDroplets; i++)
             {
@@ -322,49 +337,53 @@ namespace Sim
                 }
 
 
+                if (droplets[i].Location.Y >= savingsBottom.Location.Y && droplets[i].Location.Y < savingsBottom.Bounds.Bottom && droplets[i].Location.X > savingsBottom.Bounds.Left && droplets[i].Location.X < savingsBottom.Bounds.Right)
+                {
+                    vel[i, 1] = -vel[i, 1] * dampner;
+                    loc[i, 1] = loc[i, 1] - 2 * (loc[i, 1] + sizeDroplet.Height - savingsBottom.Bounds.Top);
+
+                }
+
+                if (droplets[i].Location.X >= bottomGuard.Bounds.Left && droplets[i].Location.X < bottomGuard.Bounds.Left + errornext && droplets[i].Location.Y > bottomGuard.Bounds.Top && droplets[i].Location.Y < bottomGuard.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = 2 * bottomGuard.Location.X - loc[i, 0];
+                }
+
 
                 // check droplet collisions
 
-                for (int j = 0; j < nDroplets; j++) // check x collision
-                {
-                    if (loc[i,0] + Convert.ToDouble(sizeDroplet.Width) > loc[j,0] - errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) < loc[j, 0] + errorMargin && loc[i,1] + Convert.ToDouble(sizeDroplet.Height) >= loc[j,1] && loc[i,1] <= loc[j,1] + Convert.ToDouble(sizeDroplet.Height) && i!=j)
+                //for (int j = 0; j < nDroplets; j++) // check x collision
+                //{
+                //    if (loc[i,0] + Convert.ToDouble(sizeDroplet.Width) > loc[j,0] - errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) < loc[j, 0] + errorMargin && loc[i,1] + Convert.ToDouble(sizeDroplet.Height) >= loc[j,1] && loc[i,1] <= loc[j,1] + Convert.ToDouble(sizeDroplet.Height) && i!=j)
                    
 
-                    {
-                        double hold;
-                        //loc[i, 0] = loc[i, 0] - vel[j, 0];
-                        //loc[j, 0] = loc[j, 0] - vel[i, 0];
-                        hold = vel[i, 0];
-                        vel[i, 0] = vel[j, 0];
-                        vel[j, 0] = hold;
+                //    {
+                //        double hold;
+                       
+                //        hold = vel[i, 0];
+                //        vel[i, 0] = vel[j, 0];
+                //        vel[j, 0] = hold;
 
-                        //vel[i, 0] = 0;  // Test collision
-                        //vel[j, 0] = 0;
-                        //vel[i, 1] = 0;
-                        //vel[j, 1] = 0;
-                    }
+                      
+                //    }
 
-                }
+                //}
 
-                for (int j = 0; j < nDroplets; j++)  // check y collision
-                {
-                    if (loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) > loc[j, 1] - errorMargin && loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) < loc[j, 1] + errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) >= loc[j, 0] && loc[i, 0] <= loc[j, 0] + Convert.ToDouble(sizeDroplet.Width) && i != j)
-                    {
-                        double hold;
-                        //loc[i, 1] = loc[i, 1] - vel[j, 1];
-                        //loc[j, 1] = loc[j, 1] - vel[i, 1];
-                        hold = vel[i, 1];
-                        vel[i, 1] = vel[j, 1];
-                        vel[j, 1] = hold;
+                //for (int j = 0; j < nDroplets; j++)  // check y collision
+                //{
+                //    if (loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) > loc[j, 1] - errorMargin && loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) < loc[j, 1] + errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) >= loc[j, 0] && loc[i, 0] <= loc[j, 0] + Convert.ToDouble(sizeDroplet.Width) && i != j)
+                //    {
+                //        double hold;
+                      
+                //        hold = vel[i, 1];
+                //        vel[i, 1] = vel[j, 1];
+                //        vel[j, 1] = hold;
 
-                        //vel[i, 0] = 0;    // To test collision
-                        //vel[j, 0] = 0;
-                        //vel[i, 1] = 0;
-                        //vel[j, 1] = 0;
 
-                    }
+                //    }
 
-                }
+                //}
 
                 droplets[i].Location = new Point(Convert.ToInt32(loc[i, 0]), Convert.ToInt32(loc[i, 1]));
                 

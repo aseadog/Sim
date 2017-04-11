@@ -14,7 +14,7 @@ namespace Sim
     {
 
         List<PictureBox> droplets = new List<PictureBox>();
-        const int nDroplets = 100;
+        const int nDroplets = 200;
         Size sizeDroplet = new Size(2,2);
         Random rand = new Random();
         const int screenWidth = 1000;
@@ -33,6 +33,15 @@ namespace Sim
         PictureBox taxDividerBottom = new PictureBox();
         PictureBox taxBottom = new PictureBox();
         PictureBox salaryBottom = new PictureBox();
+        PictureBox incomeRight = new PictureBox();
+        PictureBox taxRight = new PictureBox();
+        PictureBox mainBottom = new PictureBox();
+        PictureBox maintop = new PictureBox();
+        PictureBox incomeLeft = new PictureBox();
+        PictureBox mainsupplytop = new PictureBox();
+        PictureBox salaryRight = new PictureBox();
+        PictureBox savingsBottom = new PictureBox();
+        PictureBox bottomGuard = new PictureBox();
 
         double[,] loc = new double [nDroplets, 2];
         double[,] vel = new double[nDroplets, 2];
@@ -40,6 +49,60 @@ namespace Sim
         public Form1()
         {
             InitializeComponent();
+
+         
+            incomeRight.Location = new Point(180, 100);
+            incomeRight.BackColor = sidesColor;
+            incomeRight.Size = new Size(30, 350);
+            this.Controls.Add(incomeRight);
+
+
+            taxRight.Location = new Point(300, 180);
+            taxRight.BackColor = sidesColor;
+            taxRight.Size = new Size(30, 80);
+            this.Controls.Add(taxRight);
+
+            
+            mainBottom.Location = new Point(130, 500);
+            mainBottom.BackColor = sidesColor;
+            mainBottom.Size = new Size(400, 20);
+            this.Controls.Add(mainBottom);
+
+          
+            maintop.Location = new Point(100, 20);
+            maintop.BackColor = sidesColor;
+            maintop.Size = new Size(500, 30);
+            this.Controls.Add(maintop);
+
+          
+            incomeLeft.Location = new Point(100, 20);
+            incomeLeft.BackColor = sidesColor;
+            incomeLeft.Size = new Size(30, 500);
+            this.Controls.Add(incomeLeft);
+
+            mainsupplytop.Location = new Point(180, 80);
+            mainsupplytop.BackColor = sidesColor;
+            mainsupplytop.Size = new Size(150, 30);
+            this.Controls.Add(mainsupplytop);
+
+
+            salaryRight.Location = new Point(450, 120);
+            salaryRight.BackColor = sidesColor;
+            salaryRight.Size = new Size(30, 180);
+            this.Controls.Add(salaryRight);
+
+            savingsBottom.Location = new Point(370, 300);
+            savingsBottom.BackColor = sidesColor;
+            savingsBottom.Size = new Size(110, 30);
+            this.Controls.Add(savingsBottom);
+
+            
+            bottomGuard.Location = new Point(400, 350);
+            bottomGuard.BackColor = sidesColor;
+            bottomGuard.Size = new Size(30, 170);
+            this.Controls.Add(bottomGuard);
+
+            //end
 
             this.DoubleBuffered = true;
             this.Width = screenWidth;
@@ -88,12 +151,7 @@ namespace Sim
         {
            
 
-            PictureBox incomeRight = new PictureBox();
-            incomeRight.Location = new Point(180, 100);
-            incomeRight.BackColor = sidesColor;
-            incomeRight.Size = new Size(30, 350);
-            this.Controls.Add(incomeRight);
-
+          
             
             taxDivider.Location = new Point(trackBar1.Value, 120);
             taxDivider.BackColor = sidesColor;
@@ -101,11 +159,7 @@ namespace Sim
             
             
 
-            PictureBox taxRight = new PictureBox();
-            taxRight.Location = new Point(300, 180);
-            taxRight.BackColor = sidesColor;
-            taxRight.Size = new Size(30, 80);
-            this.Controls.Add(taxRight);
+          
 
            
             taxBottom.Location = new Point(200, 260);
@@ -121,30 +175,7 @@ namespace Sim
 
 
 
-            PictureBox mainBottom = new PictureBox();
-            mainBottom.Location = new Point(130, 500);
-            mainBottom.BackColor = sidesColor;
-            mainBottom.Size = new Size(400, 20);
-            this.Controls.Add(mainBottom);
-
-            PictureBox maintop = new PictureBox();
-            maintop.Location = new Point(100, 20);
-            maintop.BackColor = sidesColor;
             
-            maintop.Size = new Size(500, 30);
-            this.Controls.Add(maintop);
-
-            PictureBox incomeLeft = new PictureBox();
-            incomeLeft.Location = new Point(100, 20);
-            incomeLeft.BackColor = sidesColor;
-            incomeLeft.Size = new Size(30, 500);
-            this.Controls.Add(incomeLeft);
-
-            PictureBox mainsupplytop = new PictureBox();
-            mainsupplytop.Location = new Point(180, 80);
-            mainsupplytop.BackColor = sidesColor;
-            mainsupplytop.Size = new Size(150, 30);
-            this.Controls.Add(mainsupplytop);
 
           
             salaryBottom.Location = new Point(330 + trackBar4.Value, 230);
@@ -152,23 +183,6 @@ namespace Sim
             salaryBottom.Size = new Size(trackBar3.Value - trackBar4.Value, 30);
             
 
-            PictureBox salaryRight = new PictureBox();
-            salaryRight.Location = new Point(450, 120);
-            salaryRight.BackColor = sidesColor;
-            salaryRight.Size = new Size(30, 180);
-            this.Controls.Add(salaryRight);
-
-            PictureBox savingsBottom = new PictureBox();
-            savingsBottom.Location = new Point(370, 300);
-            savingsBottom.BackColor = sidesColor;
-            savingsBottom.Size = new Size(110, 30);
-            this.Controls.Add(savingsBottom);
-
-            PictureBox bottomGuard = new PictureBox();
-            bottomGuard.Location = new Point(400, 350);
-            bottomGuard.BackColor = sidesColor;
-            bottomGuard.Size = new Size(30, 170);
-            this.Controls.Add(bottomGuard);
 
             for (int i = 0; i < nDroplets; i++)
             {

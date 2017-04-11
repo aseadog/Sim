@@ -61,7 +61,7 @@
             // 
             // trackBar3
             // 
-            this.trackBar3.Location = new System.Drawing.Point(500, 550);
+            this.trackBar3.Location = new System.Drawing.Point(700, 550);
             this.trackBar3.Maximum = 130;
             this.trackBar3.Minimum = 80;
             this.trackBar3.Name = "trackBar3";
@@ -71,7 +71,7 @@
             // 
             // trackBar4
             // 
-            this.trackBar4.Location = new System.Drawing.Point(700, 550);
+            this.trackBar4.Location = new System.Drawing.Point(500, 550);
             this.trackBar4.Name = "trackBar4";
             this.trackBar4.Size = new System.Drawing.Size(104, 45);
             this.trackBar4.TabIndex = 3;

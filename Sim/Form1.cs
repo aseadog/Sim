@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,13 @@ namespace Sim
         PictureBox mainsupplytop = new PictureBox();
         PictureBox salaryRight = new PictureBox();
         PictureBox savingsBottom = new PictureBox();
-        PictureBox bottomGuard = new PictureBox();
+        PictureBox fxDivider = new PictureBox();
+        PictureBox fxBottom = new PictureBox();
+        PictureBox fxRight = new PictureBox();
+        PictureBox guardBottom = new PictureBox();
+        StringBuilder csv = new StringBuilder();
+        
+        int tickCount = 0;
 
         double[,] loc = new double [nDroplets, 2];
         double[,] vel = new double[nDroplets, 2];
@@ -96,11 +103,13 @@ namespace Sim
             savingsBottom.Size = new Size(110, 30);
             this.Controls.Add(savingsBottom);
 
-            
-            bottomGuard.Location = new Point(400, 350);
-            bottomGuard.BackColor = sidesColor;
-            bottomGuard.Size = new Size(30, 170);
-            this.Controls.Add(bottomGuard);
+            guardBottom.Location = new Point(500, 400);
+            guardBottom.BackColor = sidesColor;
+            guardBottom.Size = new Size(30, 100);
+            this.Controls.Add(guardBottom);
+
+            csv.AppendLine("Tick" + "," + "Tax" + "," + "Gov" + "," + "Consumption" + "," + "Saving" + "," + "Import" + "," + "Export" + "," + "GDP" + "," + "Foreign owned balances" + "," + "Government surplus" + "," + "Public balance");
+
 
             //end
 
@@ -112,11 +121,14 @@ namespace Sim
             this.Controls.Add(taxDividerBottom);
             this.Controls.Add(taxBottom);
             this.Controls.Add(salaryBottom);
+            this.Controls.Add(fxDivider);
+            this.Controls.Add(fxBottom);
+            this.Controls.Add(fxRight);
 
             for (int i = 0; i < nDroplets; i++)
             {
                 
-                vel[i, 0] = rand.Next(1, 3);
+                vel[i, 0] = rand.Next(1, 5);
                 vel[i, 1] = rand.Next(0, 3);
 
             }
@@ -143,23 +155,36 @@ namespace Sim
             simTime.Interval = simTimeInterval;
             simTime.Enabled = true;
             simTime.Tick += new EventHandler(simTimeTick);
+            
 
         }
 
 
         void simTimeTick(object sender, EventArgs e)
         {
-           
+            int gdpCount = 0;
+            int fxBalances = 0;
+            int govtSurplus = 0;
+            int publicBalance = 0;
 
-          
-            
+
+            label1.Text = "Tax rate: " + Convert.ToString(trackBar1.Value - 320)+"%";
+
+            label2.Text = "Government spending: " + Convert.ToString((trackBar2.Value - 110)*-1) + "%";
+
+            label3.Text = "Consumption: " + Convert.ToString(trackBar4.Value) + "%";
+
+            label4.Text = "Savings: " + Convert.ToString((trackBar3.Value - 130)*-1) + "%";
+
+            label5.Text = "Imports: " + Convert.ToString((trackBar5.Value - 350) * -1) + "%";
+
+            label6.Text = "Exports: " + Convert.ToString((trackBar6.Value - 50) * -1) + "%";
+
+
             taxDivider.Location = new Point(trackBar1.Value, 120);
             taxDivider.BackColor = sidesColor;
             taxDivider.Size = new Size(20, 60);
-            
-            
-
-          
+                               
 
            
             taxBottom.Location = new Point(200, 260);
@@ -172,17 +197,24 @@ namespace Sim
             taxDividerBottom.BackColor = sidesColor;
             taxDividerBottom.Size = new Size(taxDivider.Location.X - 300, 20);
             
-
-
-
-            
+                        
 
           
             salaryBottom.Location = new Point(330 + trackBar4.Value, 230);
             salaryBottom.BackColor = sidesColor;
             salaryBottom.Size = new Size(trackBar3.Value - trackBar4.Value, 30);
-            
 
+            fxDivider.Location = new Point(trackBar5.Value, 340);
+            fxDivider.BackColor = sidesColor;
+            fxDivider.Size = new Size(30, trackBar6.Value);
+
+            fxBottom.Location = new Point(trackBar5.Value, 390);
+            fxBottom.BackColor = sidesColor;
+            fxBottom.Size = new Size(130, 30);
+
+            fxRight.Location = new Point(trackBar5.Value+100, 340);
+            fxRight.BackColor = sidesColor;
+            fxRight.Size = new Size(30, 50);
 
             for (int i = 0; i < nDroplets; i++)
             {
@@ -344,6 +376,13 @@ namespace Sim
 
                 }
 
+                if (droplets[i].Location.Y <= salaryBottom.Bounds.Bottom && droplets[i].Location.Y > salaryBottom.Bounds.Bottom - errornext && droplets[i].Location.X >= salaryBottom.Bounds.Left && droplets[i].Location.X < salaryBottom.Bounds.Right - sizeDroplet.Width)
+                {
+                    vel[i, 1] = -vel[i, 1] ;
+                    loc[i, 1] = loc[i, 1] + 2 * (salaryBottom.Bounds.Bottom - loc[i, 1]);
+
+                }
+
                 if (droplets[i].Location.X >= salaryRight.Bounds.Left && droplets[i].Location.X < salaryRight.Bounds.Left + errornext && droplets[i].Location.Y > salaryRight.Bounds.Top && droplets[i].Location.Y < salaryRight.Bounds.Bottom)
                 {
                     vel[i, 0] = -vel[i, 0];
@@ -358,11 +397,37 @@ namespace Sim
 
                 }
 
-                if (droplets[i].Location.X >= bottomGuard.Bounds.Left && droplets[i].Location.X < bottomGuard.Bounds.Left + errornext && droplets[i].Location.Y > bottomGuard.Bounds.Top && droplets[i].Location.Y < bottomGuard.Bounds.Bottom)
+                if (droplets[i].Location.X >= fxDivider.Bounds.Left && droplets[i].Location.X < fxDivider.Bounds.Left + errornext && droplets[i].Location.Y > fxDivider.Bounds.Top && droplets[i].Location.Y < fxDivider.Bounds.Bottom)
                 {
                     vel[i, 0] = -vel[i, 0];
-                    loc[i, 0] = 2 * bottomGuard.Location.X - loc[i, 0];
+                    loc[i, 0] = 2 * fxDivider.Location.X - loc[i, 0];
                 }
+
+                if (droplets[i].Location.X <= fxDivider.Bounds.Right && droplets[i].Location.X > fxDivider.Bounds.Right - errornext && droplets[i].Location.Y > fxDivider.Bounds.Top && droplets[i].Location.Y < fxDivider.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = loc[i, 0] + 2 * (fxDivider.Bounds.Right - loc[i, 0]);
+                }
+
+                if (droplets[i].Location.Y >= fxBottom.Location.Y && droplets[i].Location.Y < fxBottom.Bounds.Bottom && droplets[i].Location.X > fxBottom.Bounds.Left && droplets[i].Location.X < fxBottom.Bounds.Right)
+                {
+                    vel[i, 1] = -vel[i, 1] * dampner;
+                    loc[i, 1] = loc[i, 1] - 2 * (loc[i, 1] + sizeDroplet.Height - fxBottom.Bounds.Top);
+
+                }
+
+                if (droplets[i].Location.X >= fxRight.Bounds.Left && droplets[i].Location.X < fxRight.Bounds.Left + errornext && droplets[i].Location.Y > fxRight.Bounds.Top && droplets[i].Location.Y < fxRight.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = 2 * fxRight.Location.X - loc[i, 0];
+                }
+
+                if (droplets[i].Location.X >= guardBottom.Bounds.Left && droplets[i].Location.X < guardBottom.Bounds.Left + errornext && droplets[i].Location.Y > guardBottom.Bounds.Top && droplets[i].Location.Y < guardBottom.Bounds.Bottom)
+                {
+                    vel[i, 0] = -vel[i, 0];
+                    loc[i, 0] = 2 * guardBottom.Location.X - loc[i, 0];
+                }
+
 
 
                 // check droplet collisions
@@ -370,16 +435,16 @@ namespace Sim
                 //for (int j = 0; j < nDroplets; j++) // check x collision
                 //{
                 //    if (loc[i,0] + Convert.ToDouble(sizeDroplet.Width) > loc[j,0] - errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) < loc[j, 0] + errorMargin && loc[i,1] + Convert.ToDouble(sizeDroplet.Height) >= loc[j,1] && loc[i,1] <= loc[j,1] + Convert.ToDouble(sizeDroplet.Height) && i!=j)
-                   
+
 
                 //    {
                 //        double hold;
-                       
+
                 //        hold = vel[i, 0];
                 //        vel[i, 0] = vel[j, 0];
                 //        vel[j, 0] = hold;
 
-                      
+
                 //    }
 
                 //}
@@ -389,7 +454,7 @@ namespace Sim
                 //    if (loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) > loc[j, 1] - errorMargin && loc[i, 1] + Convert.ToDouble(sizeDroplet.Height) < loc[j, 1] + errorMargin && loc[i, 0] + Convert.ToDouble(sizeDroplet.Width) >= loc[j, 0] && loc[i, 0] <= loc[j, 0] + Convert.ToDouble(sizeDroplet.Width) && i != j)
                 //    {
                 //        double hold;
-                      
+
                 //        hold = vel[i, 1];
                 //        vel[i, 1] = vel[j, 1];
                 //        vel[j, 1] = hold;
@@ -401,11 +466,51 @@ namespace Sim
 
                 droplets[i].Location = new Point(Convert.ToInt32(loc[i, 0]), Convert.ToInt32(loc[i, 1]));
                 
+                //gdp count
 
+                if (droplets[i].Location.X > incomeLeft.Bounds.Right  && droplets[i].Bounds.Bottom < mainsupplytop.Bounds.Top)
+                {
+                    gdpCount++;
+                  
+                }
+
+                // foreign owned balances
+
+                if (droplets[i].Location.X > fxDivider.Bounds.Left && droplets[i].Bounds.Right < fxRight.Bounds.Right && droplets[i].Bounds.Bottom < fxBottom.Bounds.Bottom + errorMargin && droplets[i].Bounds.Bottom > fxDivider.Bounds.Top)
+                {
+                    fxBalances++;
+                    
+                }
+
+                // government surplus
+
+                if (droplets[i].Location.X > incomeRight.Bounds.Left && droplets[i].Bounds.Right < taxRight.Bounds.Right && droplets[i].Bounds.Bottom > taxDividerBottom.Bounds.Bottom - errorMargin && droplets[i].Bounds.Bottom < taxBottom.Bounds.Bottom)
+                {
+                    govtSurplus++;
+
+                }
+
+                if (droplets[i].Location.X > taxRight.Bounds.Left && droplets[i].Bounds.Right < salaryRight.Bounds.Right && droplets[i].Bounds.Bottom > taxDividerBottom.Bounds.Bottom - errorMargin && droplets[i].Bounds.Bottom < salaryBottom.Bounds.Bottom)
+                {
+                    publicBalance++;
+
+                }
+
+                label7.Text = "GDP: " + Convert.ToString(gdpCount);
+                label8.Text = "Foreign owned balances: " + Convert.ToString(fxBalances);
+                label9.Text = "Government Surplus: " + Convert.ToString(govtSurplus);
+                label10.Text = "Public balance: " + Convert.ToString(publicBalance);
             }
 
-            
-                      
+            tickCount++;
+
+           
+
+            csv.AppendLine(Convert.ToString(tickCount + "," + Convert.ToString(trackBar1.Value - 320) + "," + Convert.ToString((trackBar2.Value - 110) * -1) + "," + Convert.ToString(trackBar4.Value) + "," + Convert.ToString((trackBar3.Value - 130) * -1) + "," + Convert.ToString((trackBar5.Value - 350) * -1) + "," + Convert.ToString((trackBar6.Value - 50) * -1) + "," + Convert.ToString(gdpCount) + "," + Convert.ToString(fxBalances) + "," + Convert.ToString(govtSurplus) + "," + Convert.ToString(publicBalance)));
+
+            File.WriteAllText("C: /Users/Andrew/Documents/Economy Sim/Test.csv", csv.ToString());
+
+           
 
         }
 
@@ -444,11 +549,6 @@ namespace Sim
                 return true;
             return false;
         }
-
-
-
-
-        
 
        
     }
